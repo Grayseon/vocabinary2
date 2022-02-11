@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabinary2</title>
+</head>
+<body>
+    <div id="cai">
+        <div id="correct">
+            <p>Correct</p>
+        </div>
+        <div id="incorrect">
+            <p>Incorrect</p>
+        </div>
+    </div>
+    <div id="topbar">
+        <p id="title">Vocabinary</p>
+        <p id="str">Streak: 0</p>
+    </div>
+    <p id="question"></p>
+    <div id="buttons">
+        <button id="o" class="button"></button>
+        <button id="t" class="button"></button>
+        <button id="th" class="button"></button>
+        <button id="f" class="button"></button>
+    </div>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Mochiy+Pop+P+One&display=swap');
+        #o {top: 50vh; background-color: red;}
+        #t {top: 50vh; right: 1vw; background-color: orange;}
+        #th {bottom: 1vh; background-color: greenyellow;}
+        #f {right: 1vw; bottom: 1vh; background-color: aqua;}
+        #cai div, #buttons {
+            transition: opacity 0.5s;
+        }
+        #cai, #cai div {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #cai div p {
+            position: absolute;
+            height: 100vh;
+            line-height: 100vh;
+            color: white;
+            width: 100vw;
+            text-align: center;
+            font-size: 7rem;
+        }
+        #incorrect, #correct {
+            opacity: 0;
+        }
+        #incorrect {
+            background-color: red;
+            width: 100vw;
+            height: 100vh;
+        }
+        #correct {
+            background-color: greenyellow;
+            width: 100vw;
+            height: 100vh;
+        }
+        #title {
+            position: absolute;
+            font-family: 'Dancing Script', cursive;
+            color: white;
+            text-align: center;
+            font-size: 1.5rem;
+            width: 100vw;
+            top: -1.5vh;
+        }
+        #str {
+            color: white;
+            font-size: 1.5rem;
+            position: absolute;
+            width: 100vw;
+            top: -1.5vh;
+            right: 0vw;
+        }
+        #topbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 8vh;
+            background-color: #c246ab;
+        }
+        .button {
+            font-size: 2rem;
+            border: 0;
+            position: absolute;
+            height: 20vh;
+            width: 45vw;
+            color: white;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+        #question {
+            top:0;
+            font-size: 4rem;
+            line-height: 15vh;
+            text-align: center;
+        }
+        body {
+            overflow: hidden;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script>
+        var data
+        function addEvents(){
+            for(i=0;i<document.getElementsByClassName('button').length;i++){
+                document.getElementsByClassName('button')[i].addEventListener('click', function(){
+                    correct = false
+                    Object.entries(data[document.getElementById('question').innerHTML]).forEach(dat=>{
+                        dat = dat[1].toString()
+                        if(dat.startsWith('cr') && dat.endsWith(this.innerHTML)){
+                            correct = true
+                        }
+                    })
+                    if(correct){
+                        document.getElementById('str').innerHTML = "Streak: " + (parseInt(document.getElementById('str').innerHTML.split(' ')[1]) + 1)
+                        document.getElementById('correct').style.opacity = "1"
+                        document.getElementById('buttons').style.opacity = "0"
+                        setTimeout(() => {
+                            buttons()
+                            document.getElementById('correct').style.opacity = "0"
+                            document.getElementById('buttons').style.opacity = "1"
+                        }, 1000);
+                    }else{
+                        document.getElementById('str').innerHTML = "Streak: 0"
+                        document.getElementById('incorrect').style.opacity = "1"
+                        document.getElementById('buttons').style.opacity = "0"
+                        setTimeout(() => {
+                            buttons()
+                            document.getElementById('incorrect').style.opacity = "0"
+                            document.getElementById('buttons').style.opacity = "1"
+                        }, 1000);
+                    }
+                })
+                
+            }
+        }
+        function buttons(){
+            var question = Object.keys(data)[ran(Object.keys(data).length)]
+            var ans = data[question]
+            document.getElementById('question').innerHTML = question
+            var rand = assign([0,1,2,3])
+            for(i=0;i<document.getElementsByClassName('button').length;i++){
+                if(ans[rand[i]].startsWith('cr')){
+                    document.getElementsByClassName('button')[i].innerHTML = ans[rand[i]].substring(2)
+                }else{
+                    document.getElementsByClassName('button')[i].innerHTML = ans[rand[i]]
+                }
+            }
+        }
+        $.getJSON('./words.json', function(datas){
+            data = datas
+            buttons()
+            addEvents()
+        })
+        
+        function assign(array){
+            let currentIndex = array.length,  randomIndex
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex)
+                currentIndex--
+                [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]]
+            }
+
+            return array;
+        }
+        function ran(max){
+            return Math.floor(Math.random() * max)
+        }
+    </script>
+</body>
+</html>
